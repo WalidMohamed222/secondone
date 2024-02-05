@@ -1,105 +1,117 @@
-import 'package:carousel_slider/carousel_slider.dart';
-import 'package:flutter/material.dart';
-import 'package:secondone/models/cart_model.dart';
+import 'dart:convert';
 
-class CartDetailsScreen extends StatefulWidget {
-  final Cart cart;
+CartModel cartModelFromJson(String str) => CartModel.fromJson(json.decode(str));
 
-  const CartDetailsScreen({Key? key, required this.cart})
-      : super(key: key);
+String cartModelToJson(CartModel data) => json.encode(data.toJson());
 
-  @override
-  State<CartDetailsScreen> createState() => _CartDetailsScreenState();
+class CartModel {
+  List<Cart>? carts;
+  int? total;
+  int? skip;
+  int? limit;
+
+  CartModel({
+    this.carts,
+    this.total,
+    this.skip,
+    this.limit,
+  });
+
+  factory CartModel.fromJson(Map<String, dynamic> json) => CartModel(
+    carts: json["carts"] == null ? [] : List<Cart>.from(json["carts"]!.map((x) => Cart.fromJson(x))),
+    total: json["total"],
+    skip: json["skip"],
+    limit: json["limit"],
+  );
+
+  Map<String, dynamic> toJson() => {
+    "carts": carts == null ? [] : List<dynamic>.from(carts!.map((x) => x.toJson())),
+    "total": total,
+    "skip": skip,
+    "limit": limit,
+  };
 }
 
-class _CartDetailsScreenState extends State<CartDetailsScreen> {
-  int selectedQuantity = 2;
+class Cart {
+  int? id;
+  List<Product>? products;
+  int? total;
+  int? discountedTotal;
+  int? userId;
+  int? totalProducts;
+  int? totalQuantity;
 
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(widget.cart. ?? "--"),
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          // Add product to cart logic
-        },
-        child: const Icon(Icons.add_shopping_cart),
-      ),
-      body: ListView(
-        children: [
-          CarouselSlider(
-            options: CarouselOptions(),
-            items: (widget.cart.images ?? [])
-                .map(
-                  (item) => SizedBox(
-                height: MediaQuery.of(context).size.height * 0.2,
-                width: MediaQuery.of(context).size.width,
-                child: Center(
-                  child: Padding(
-                    padding: const EdgeInsets.all(6.0),
-                    child: Image.network(item),
-                  ),
-                ),
-              ),
-            )
-                .toList(),
-          ),
-          ListTile(
-            title: Text("Brand: ${widget.cart.brand}"),
-            subtitle: Text("In Stock: ${widget.cart.stock}"),
-          ),
-          ListTile(
-            title: Text("Category: ${widget.cart.category}"),
-          ),
-          Padding(
-            padding: const EdgeInsets.all(6.0),
-            child: Text(
-              "Price: \$${widget.cart.price}",
-              style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.all(6.0),
-            child: Row(
-              children: [
-                Text("${widget.cart.rating}"),
-                const Icon(Icons.star),
-              ],
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.all(6.0),
-            child: Text(widget.cart.description ?? "--"),
-          ),
-          ListTile(
-            title: const Text("Discount:"),
-            subtitle: widget.cart.discountPercentage != null
-                ? Text("${widget.cart.discountPercentage}% off")
-                : const Text("No discount available"),
-          ),
-          ListTile(
-            title: const Text("Quantity:"),
-            trailing: DropdownButton<int>(
-              value: selectedQuantity,
-              onChanged: (value) {
-                setState(() {
-                  selectedQuantity = value!;
-                });
-              },
-              items: List.generate(10, (index) => index + 1)
-                  .map<DropdownMenuItem<int>>(
-                    (value) => DropdownMenuItem<int>(
-                  value: value,
-                  child: Text(value.toString()),
-                ),
-              )
-                  .toList(),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
+  Cart({
+    this.id,
+    this.products,
+    this.total,
+    this.discountedTotal,
+    this.userId,
+    this.totalProducts,
+    this.totalQuantity,
+  });
+
+  factory Cart.fromJson(Map<String, dynamic> json) => Cart(
+    id: json["id"],
+    products: json["products"] == null ? [] : List<Product>.from(json["products"]!.map((x) => Product.fromJson(x))),
+    total: json["total"],
+    discountedTotal: json["discountedTotal"],
+    userId: json["userId"],
+    totalProducts: json["totalProducts"],
+    totalQuantity: json["totalQuantity"],
+  );
+
+  Map<String, dynamic> toJson() => {
+    "id": id,
+    "products": products == null ? [] : List<dynamic>.from(products!.map((x) => x.toJson())),
+    "total": total,
+    "discountedTotal": discountedTotal,
+    "userId": userId,
+    "totalProducts": totalProducts,
+    "totalQuantity": totalQuantity,
+  };
+}
+
+class Product {
+  int? id;
+  String? title;
+  int? price;
+  int? quantity;
+  int? total;
+  double? discountPercentage;
+  int? discountedPrice;
+  String? thumbnail;
+
+  Product({
+    this.id,
+    this.title,
+    this.price,
+    this.quantity,
+    this.total,
+    this.discountPercentage,
+    this.discountedPrice,
+    this.thumbnail,
+  });
+
+  factory Product.fromJson(Map<String, dynamic> json) => Product(
+    id: json["id"],
+    title: json["title"],
+    price: json["price"],
+    quantity: json["quantity"],
+    total: json["total"],
+    discountPercentage: json["discountPercentage"]?.toDouble(),
+    discountedPrice: json["discountedPrice"],
+    thumbnail: json["thumbnail"],
+  );
+
+  Map<String, dynamic> toJson() => {
+    "id": id,
+    "title": title,
+    "price": price,
+    "quantity": quantity,
+    "total": total,
+    "discountPercentage": discountPercentage,
+    "discountedPrice": discountedPrice,
+    "thumbnail": thumbnail,
+  };
 }
