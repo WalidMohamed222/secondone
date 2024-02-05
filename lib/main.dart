@@ -13,7 +13,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Creativa App',
       theme: ThemeData(
-        colorScheme: ColorScheme.fromSwatch(primarySwatch: Colors.blue),
+        colorScheme: ColorScheme.fromSwatch(primarySwatch: Colors.cyan),
         useMaterial3: true,
       ),
       home: const SplashScreen(),

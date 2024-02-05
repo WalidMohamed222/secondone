@@ -31,7 +31,7 @@ class _SignInPageState extends State<SignInPage> {
               SizedBox(
                 width: 200,
                 height: 180,
-                child: Image.asset("assets/coffee1.png"),
+                child: Image.asset("assets/coffee.png"),
               ),
               Padding(
                 padding: const EdgeInsets.all(10),
