@@ -1,6 +1,8 @@
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
+import 'package:secondone/models/cart_model.dart';
 import 'package:secondone/models/products_model.dart';
+import 'package:secondone/service/cart_service.dart';
 
 class ProductDetailsScreen extends StatefulWidget {
   final Product product;
@@ -31,8 +33,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
         children: [
           CarouselSlider(
             options: CarouselOptions(),
-            items: (widget.product.images ?? [])
-                .map(
+            items: (widget.product.images ?? []).map(
                   (item) => SizedBox(
                 height: MediaQuery.of(context).size.height * 0.2,
                 width: MediaQuery.of(context).size.width,
@@ -43,8 +44,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                   ),
                 ),
               ),
-            )
-                .toList(),
+            ).toList(),
           ),
           ListTile(
             title: Text("Brand: ${widget.product.brand}"),

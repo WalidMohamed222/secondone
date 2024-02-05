@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:secondone/models/products_model.dart';
 import 'package:secondone/service/products_service.dart';
 import 'package:secondone/views/screens/product_details_screen.dart';
-
+import 'package:secondone/views/screens/cart_details_screen.dart';
 class MainScreen extends StatefulWidget {
   const MainScreen({Key? key}) : super(key: key);
 

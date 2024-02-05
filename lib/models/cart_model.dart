@@ -1,78 +1,4 @@
-import 'dart:convert';
-
-CartModel cartModelFromJson(String str) => CartModel.fromJson(json.decode(str));
-
-String cartModelToJson(CartModel data) => json.encode(data.toJson());
-
-class CartModel {
-  List<Cart>? carts;
-  int? total;
-  int? skip;
-  int? limit;
-
-  CartModel({
-    this.carts,
-    this.total,
-    this.skip,
-    this.limit,
-  });
-
-  factory CartModel.fromJson(Map<String, dynamic> json) => CartModel(
-    carts: json["carts"] == null ? [] : List<Cart>.from(json["carts"]!.map((x) => Cart.fromJson(x))),
-    total: json["total"],
-    skip: json["skip"],
-    limit: json["limit"],
-  );
-
-  Map<String, dynamic> toJson() => {
-    "carts": carts == null ? [] : List<dynamic>.from(carts!.map((x) => x.toJson())),
-    "total": total,
-    "skip": skip,
-    "limit": limit,
-  };
-}
-
-class Cart {
-  int? id;
-  List<Product>? products;
-  int? total;
-  int? discountedTotal;
-  int? userId;
-  int? totalProducts;
-  int? totalQuantity;
-
-  Cart({
-    this.id,
-    this.products,
-    this.total,
-    this.discountedTotal,
-    this.userId,
-    this.totalProducts,
-    this.totalQuantity,
-  });
-
-  factory Cart.fromJson(Map<String, dynamic> json) => Cart(
-    id: json["id"],
-    products: json["products"] == null ? [] : List<Product>.from(json["products"]!.map((x) => Product.fromJson(x))),
-    total: json["total"],
-    discountedTotal: json["discountedTotal"],
-    userId: json["userId"],
-    totalProducts: json["totalProducts"],
-    totalQuantity: json["totalQuantity"],
-  );
-
-  Map<String, dynamic> toJson() => {
-    "id": id,
-    "products": products == null ? [] : List<dynamic>.from(products!.map((x) => x.toJson())),
-    "total": total,
-    "discountedTotal": discountedTotal,
-    "userId": userId,
-    "totalProducts": totalProducts,
-    "totalQuantity": totalQuantity,
-  };
-}
-
-class Product {
+class CartItem {
   int? id;
   String? title;
   int? price;
@@ -81,8 +7,9 @@ class Product {
   double? discountPercentage;
   int? discountedPrice;
   String? thumbnail;
+  int? productId;
 
-  Product({
+  CartItem({
     this.id,
     this.title,
     this.price,
@@ -91,9 +18,23 @@ class Product {
     this.discountPercentage,
     this.discountedPrice,
     this.thumbnail,
+    this.productId,
   });
+  factory CartItem.fromProduct(product, int quantity) {
+    return CartItem(
+      id: product.id,
+      title: product.title,
+      price: product.price,
+      quantity: quantity,
+      total: product.price! * quantity,
+      discountPercentage: product.discountPercentage,
+      discountedPrice: product.discountedPrice,
+      thumbnail: product.thumbnail,
+      productId: product.id,
+    );
+  }
 
-  factory Product.fromJson(Map<String, dynamic> json) => Product(
+  factory CartItem.fromJson(Map<String, dynamic> json) => CartItem(
     id: json["id"],
     title: json["title"],
     price: json["price"],
@@ -102,6 +43,7 @@ class Product {
     discountPercentage: json["discountPercentage"]?.toDouble(),
     discountedPrice: json["discountedPrice"],
     thumbnail: json["thumbnail"],
+    productId: json["productId"],
   );
 
   Map<String, dynamic> toJson() => {
@@ -113,5 +55,6 @@ class Product {
     "discountPercentage": discountPercentage,
     "discountedPrice": discountedPrice,
     "thumbnail": thumbnail,
+    "productId": productId,
   };
 }
