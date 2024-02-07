@@ -1,8 +1,8 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:secondone/app_settings.dart';
+import 'package:secondone/core/firebase_auth_util.dart';
 import 'package:secondone/views/screens/home_page.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:secondone/views/widgets/app_button.dart';
 
 class SignInPage extends StatefulWidget {
   const SignInPage({
@@ -15,10 +15,9 @@ class SignInPage extends StatefulWidget {
 
 class _SignInPageState extends State<SignInPage> {
   final _formKey = GlobalKey<FormState>();
-  TextEditingController phoneNumberController = TextEditingController();
+  TextEditingController emailController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
-  bool showPassword = false;
-
+  bool isLoading = false;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -36,17 +35,17 @@ class _SignInPageState extends State<SignInPage> {
               Padding(
                 padding: const EdgeInsets.all(10),
                 child: TextFormField(
-                  controller: phoneNumberController,
-                  keyboardType: TextInputType.phone,
+                  controller: emailController,
+                  keyboardType: TextInputType.emailAddress,
                   decoration: const InputDecoration(
-                    labelText: "Phone Number",
-                    prefixIcon: Icon(Icons.phone),
+                    labelText: "Email",
+                    prefixIcon: Icon(Icons.email),
                   ),
                   validator: (value) {
-                    if (value!.length > 8 && value.length < 12) {
+                    if (value!.isNotEmpty) {
                       return null;
                     } else {
-                      return "Invalid Phone number";
+                      return "Invalid Email";
                     }
                   },
                 ),
@@ -54,22 +53,9 @@ class _SignInPageState extends State<SignInPage> {
               Padding(
                 padding: const EdgeInsets.all(10),
                 child: TextFormField(
+                  obscureText: true,
                   controller: passwordController,
-                  obscureText: !showPassword,
-                  decoration: InputDecoration(
-                    labelText: "Password",
-                    prefixIcon: const Icon(Icons.lock),
-                    suffixIcon: IconButton(
-                      icon: Icon(showPassword
-                          ? Icons.visibility
-                          : Icons.visibility_off),
-                      onPressed: () {
-                        setState(() {
-                          showPassword = !showPassword;
-                        });
-                      },
-                    ),
-                  ),
+                  decoration: const InputDecoration(labelText: "Password"),
                   validator: (value) {
                     if (value!.length < 8) {
                       return "Invalid Password";
@@ -78,57 +64,54 @@ class _SignInPageState extends State<SignInPage> {
                   },
                 ),
               ),
-              ElevatedButton(
-                onPressed: () async {
+              isLoading
+                  ? const Center(
+                child: CircularProgressIndicator(),
+              )
+                  : AppButton(
+                label: "Log in",
+                color: Colors.blue[300]!,
+                onTap: () async {
                   if (_formKey.currentState!.validate()) {
                     if (kDebugMode) {
                       print("Logged in");
                     }
-                    final SharedPreferences prefs =
-                    await SharedPreferences.getInstance();
-                    await prefs.setString(
-                      AppSettings.emailSharedPrefsKey,
-                      phoneNumberController.text,
-                    );
-                    Navigator.pushReplacement(
-                      context,
-                      MaterialPageRoute(builder: (context) => const HomePage()),
-                    );
+                    isLoading = true;
+                    setState(() {});
+                    bool loginResult = await FirebaseAuthUtil.loginIn(
+                        email: emailController.text, password: passwordController.text);
+                    if (loginResult) {
+                      Navigator.pushReplacement(
+                        context,
+                        MaterialPageRoute(builder: (context) => const HomePage()),
+                      );
+                    } else {
+                      var snackBar = const SnackBar(
+                        content: Text("Email or password is not correct"),
+                      );
+                      ScaffoldMessenger.of(context).showSnackBar(snackBar);
+                    }
+                    isLoading = false;
+                    setState(() {});
+                  }
+                },
+              ),
 
-                    passwordController.clear();
-                  }
-                },
-                child: const Text("Log in"),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.blue[200],
-                ),
-              ),
               const SizedBox(
                 height: 15,
               ),
-              GestureDetector(
+              const Text("Forgot Password?. Tap me"),
+              const SizedBox(
+                height: 15,
+              ),
+              AppButton(
+                label: "No account, sign up",
+                color: Colors.grey,
                 onTap: () {
-                  // Implement Forgot Password functionality
-                  if (kDebugMode) {
-                    print("Forgot Password");
-                  }
-                },
-                child: const Text("Forgot Password?. Tap me"),
-              ),
-              const SizedBox(
-                height: 15,
-              ),
-              ElevatedButton(
-                onPressed: () {
-                  // Implement Sign Up functionality
                   if (kDebugMode) {
                     print("Sign up");
                   }
                 },
-                child: const Text("No account, sign up"),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.grey[200],
-                ),
               ),
             ],
           ),

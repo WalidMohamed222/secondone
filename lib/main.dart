@@ -1,9 +1,16 @@
-import 'package:flutter/material.dart';
-import 'package:secondone/views/screens/splash_screen.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'firebase_options.dart';
+import 'package:flutter/material.dart';
+import 'package:secondone/firebase_options.dart';
+import 'package:secondone/views/screens/splash_screen.dart';
 
-void main() {
+// Entry Point Of Dart program
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  // initialize firebase app
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
+  // Entry point of Flutter Application
   runApp(const MyApp());
 }
 
